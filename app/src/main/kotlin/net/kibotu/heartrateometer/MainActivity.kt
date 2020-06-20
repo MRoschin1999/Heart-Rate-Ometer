@@ -1,18 +1,25 @@
 package net.kibotu.heartrateometer
 
+import Config
+import Observation
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 import net.kibotu.heartrateometer.app.R
 import net.kibotu.kalmanrx.jama.Matrix
 import net.kibotu.kalmanrx.jkalman.JKalman
+import piece_drop
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,9 +28,112 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        var config: Config = Config(6, 7, 4)
+        var observation: Observation = Observation(config)
+        var agent: Agent = Agent(config);
+        var count_1 = 0
+        var count_2 = 0
+        fun resetTable() {
+            observation = Observation(config)
+            for (i in 0 until 6) {
+                for (j in 0 until 7) {
+                    var buttonID: String = "button_" + i + j
+                    var resID: Int = resources.getIdentifier(buttonID, "id", packageName)
+                    var a = findViewById<Button>(resID)
+                    a.setBackgroundDrawable(getResources().getDrawable(R.drawable.circle_btn));
+                }
+            }
+        }
 
+        fun resetGame() {
+            count_1 = 0
+            count_2 = 0
+            var text:TextView = findViewById(R.id.count_1)
+            text.setText(count_1.toString())
+            text = findViewById(R.id.count_2)
+            text.setText(count_2.toString())
+            observation = Observation(config)
+            for (i in 0 until 6) {
+                for (j in 0 until 7) {
+                    var buttonID: String = "button_" + i + j
+                    var resID: Int = resources.getIdentifier(buttonID, "id", packageName)
+                    var a = findViewById<Button>(resID)
+                    a.setBackgroundDrawable(getResources().getDrawable(R.drawable.circle_btn));
+                }
+            }
+        }
+
+        val toast_user = Toast.makeText(
+                applicationContext,
+                "Вы выиграли!",
+                Toast.LENGTH_SHORT
+        )
+        val toast_opponent = Toast.makeText(
+                applicationContext,
+                "Вы проиграли",
+                Toast.LENGTH_SHORT
+        )
+        val wrong = Toast.makeText(
+                applicationContext,
+                "Смените колонку для хода",
+                Toast.LENGTH_SHORT
+        )
+        for (i in 0 until 6) {
+            for (j in 0 until 7) {
+                var res: piece_drop?
+                var buttonID: String = "button_" + i + j
+                var resID: Int = resources.getIdentifier(buttonID, "id", packageName)
+                var a = findViewById<Button>(resID)
+                a.setOnClickListener {
+                    res = observation.nextMove(config, j)
+
+                    if (res != null) {
+                        buttonID = "button_" + res!!.row + res!!.col
+                        resID = resources.getIdentifier(buttonID, "id", packageName)
+                        a = findViewById(resID)
+                        if (res != null) {
+                            if (res!!.mark == 1)
+                                a.setBackgroundDrawable(getResources().getDrawable(R.drawable.blue_btn));
+                            if (res!!.mark == 2)
+                                a.setBackgroundDrawable(getResources().getDrawable(R.drawable.red_btn));
+                            if (res!!.win) {
+                                toast_user.show()
+                                count_1+=1
+                                var text: TextView = findViewById(R.id.count_1)
+                                text.setText(count_1.toString())
+                                Handler().postDelayed(Runnable { resetTable() }, 2000)
+                            }
+                        }
+                        res = observation.nextMove(config, agent.calculate_the_move(2, observation))
+                        if (res != null) {
+                            buttonID = "button_" + res!!.row + res!!.col
+                        }
+                        resID = resources.getIdentifier(buttonID, "id", packageName)
+                        a = findViewById(resID)
+                        if (res != null) {
+                            if (res!!.mark == 1)
+                                a.setBackgroundDrawable(getResources().getDrawable(R.drawable.blue_btn));
+                            if (res!!.mark == 2)
+                                a.setBackgroundDrawable(getResources().getDrawable(R.drawable.red_btn));
+                            if (res!!.win) {
+                                toast_opponent.show()
+                                count_2+=1
+                                var text: TextView = findViewById(R.id.count_2)
+                                text.setText(count_2.toString())
+                                Handler().postDelayed(Runnable { resetTable() }, 2000)
+                            }
+                        }
+                    } else {
+                        wrong.show()
+                    }
+                }
+            }
+            var a = findViewById<Button>(resources.getIdentifier("reset", "id", packageName))
+            a.setOnClickListener {
+                resetGame()
+            }
+        }
     }
-
 
     private fun startWithPermissionCheck() {
         if (!hasPermission(Manifest.permission.CAMERA)) {
