@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    
     private fun startWithPermissionCheck() {
         if (!hasPermission(Manifest.permission.CAMERA)) {
             checkPermissions(REQUEST_CAMERA_PERMISSION, Manifest.permission.CAMERA)
