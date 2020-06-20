@@ -24,6 +24,8 @@ import piece_drop
 class MainActivity : AppCompatActivity() {
 
     var subscription: CompositeDisposable? = null
+    var bpm:Int? = 60
+    var difficulty:Int? = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -182,6 +184,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun onBpm(bpm: HeartRateOmeter.Bpm) {
         // Log.v("HeartRateOmeter", "[onBpm] $bpm")
+        this.bpm = bpm.value
         label.text = "$bpm bpm"
     }
 
@@ -250,4 +253,15 @@ class MainActivity : AppCompatActivity() {
     }
 
 // endregion
+
+    private fun bpmToDifficulty() :Int {
+        if(bpm != null)
+            return when {
+                bpm!! <= 70 -> 4
+                bpm!! in 71..85 -> 3
+                bpm!! in 86..120 -> 2
+                bpm!! > 120 -> 1
+                else -> 0
+            }
+    }
 }
