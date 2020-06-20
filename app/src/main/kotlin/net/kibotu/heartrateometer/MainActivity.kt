@@ -261,7 +261,9 @@ class MainActivity : AppCompatActivity() {
                 bpm!! in 71..85 -> 3
                 bpm!! in 86..120 -> 2
                 bpm!! > 120 -> 1
-                else -> 0
+                else -> 1
             }
+        else
+            return 1
     }
 }
