@@ -402,7 +402,10 @@
             android:textSize="60sp" />
 
     </LinearLayout>
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
     <SurfaceView
         android:id="@+id/preview"
         android:layout_width="1dp"
@@ -417,11 +420,11 @@
 
     <TextView
         android:id="@+id/label"
-        android:layout_width="1dp"
-        android:layout_height="1dp"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
         android:gravity="center"
         android:textColor="@android:color/black"
-        android:textSize="0sp"
+        android:textSize="32sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -431,8 +434,8 @@
 
     <TextView
         android:id="@+id/finger"
-        android:layout_width="5dp"
-        android:layout_height="0dp"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="363dp"
         android:gravity="center"
         android:textColor="@android:color/black"
@@ -440,4 +443,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/label"
         app:layout_constraintRight_toRightOf="parent" />
+    </LinearLayout>
 </LinearLayout>
