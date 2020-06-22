@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                                 Handler().postDelayed(Runnable { resetTable() }, 2000)
                             }
                         }
-                        res = observation.nextMove(config, agent.calculate_the_move(2, observation))
+                        res = observation.nextMove(config, agent.calculate_the_move(bpmToDifficulty(), observation))
                         if (res != null) {
                             buttonID = "button_" + res!!.row + res!!.col
                         }
@@ -185,7 +185,8 @@ class MainActivity : AppCompatActivity() {
     private fun onBpm(bpm: HeartRateOmeter.Bpm) {
         // Log.v("HeartRateOmeter", "[onBpm] $bpm")
         this.bpm = bpm.value
-        label.text = "$bpm bpm"
+        label.text = bpm.value.toString()
+        difficulty_label.text = difficulty.toString()
     }
 
     private fun onFingerChange(fingerDetected: Boolean){
@@ -254,16 +255,13 @@ class MainActivity : AppCompatActivity() {
 
 // endregion
 
-    private fun bpmToDifficulty() :Int {
+    private fun bpmToDifficulty() :Int? {
         if(bpm != null)
-            return when {
-                bpm!! <= 70 -> 4
-                bpm!! in 71..85 -> 3
-                bpm!! in 86..120 -> 2
-                bpm!! > 120 -> 1
-                else -> 1
+            when {
+                bpm!! <= 70 -> difficulty = 2
+                bpm!! > 70 -> difficulty = 1
+                else -> difficulty = 1
             }
-        else
-            return 1
+        return difficulty
     }
 }
