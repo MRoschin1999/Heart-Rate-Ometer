@@ -29,7 +29,7 @@ class Agent {
         return res.random()
     }
 
-    fun calculate_the_move(level: Int, observation: Observation): Int {
+    fun calculate_the_move(level: Int?, observation: Observation): Int {
         var obs: Observation
         var piece: piece_drop?
         when (level) {
