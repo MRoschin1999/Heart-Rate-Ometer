@@ -4,6 +4,7 @@ import Config
 import Observation
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
@@ -17,6 +18,7 @@ import android.widget.Toast
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 import net.kibotu.heartrateometer.app.R
+import net.kibotu.heartrateometer.app.SecondActivity
 import net.kibotu.kalmanrx.jama.Matrix
 import net.kibotu.kalmanrx.jkalman.JKalman
 import piece_drop
@@ -26,15 +28,22 @@ class MainActivity : AppCompatActivity() {
     var subscription: CompositeDisposable? = null
     var bpm:Int? = 60
     var difficulty:Int? = 1
+    var age:Int? = 25
+    var weight:Int? = 65
+    var height:Int? = 170
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
         var config: Config = Config(6, 7, 4)
         var observation: Observation = Observation(config)
         var agent: Agent = Agent(config);
         var count_1 = 0
         var count_2 = 0
+        age = intent.getIntExtra("age", 25)
+        weight = intent.getIntExtra("weight", 65)
+        height = intent.getIntExtra("height", 170)
         fun resetTable() {
             observation = Observation(config)
             for (i in 0 until 6) {
@@ -133,6 +142,12 @@ class MainActivity : AppCompatActivity() {
             var a = findViewById<Button>(resources.getIdentifier("reset", "id", packageName))
             a.setOnClickListener {
                 resetGame()
+            }
+
+            var physicalParams = findViewById<Button>(resources.getIdentifier("physical_param", "id", packageName))
+            physicalParams.setOnClickListener {
+                val intent2 = Intent(this, SecondActivity::class.java)
+                startActivity(intent2)
             }
         }
     }
@@ -256,10 +271,12 @@ class MainActivity : AppCompatActivity() {
 // endregion
 
     private fun bpmToDifficulty() :Int? {
+        var am: Double = 2.1
         if(bpm != null)
+            am = 0.0011* bpm!! + 0.014*125 + 0.008*80 + 0.009*weight!! - 0.009* height!! + 0.014*age!!
             when {
-                bpm!! <= 70 -> difficulty = 2
-                bpm!! > 70 -> difficulty = 1
+                am <= 2 -> difficulty = 2
+                am > 2 -> difficulty = 1
                 else -> difficulty = 1
             }
         return difficulty
