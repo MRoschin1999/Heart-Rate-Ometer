@@ -275,8 +275,8 @@ class MainActivity : AppCompatActivity() {
         if(bpm != null)
             am = 0.0011* bpm!! + 0.014*125 + 0.008*80 + 0.009*weight!! - 0.009* height!! + 0.014*age!!
             when {
-                am <= 2 -> difficulty = 2
-                am > 2 -> difficulty = 1
+                am <= 2.3 -> difficulty = 2
+                am > 2.3 -> difficulty = 1
                 else -> difficulty = 1
             }
         return difficulty
